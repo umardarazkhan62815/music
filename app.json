@@ -1,0 +1,9 @@
+{
+  "name": "VideoApp",
+  "displayName": "VideoApp",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-1146306938517797~1696364662",
+    "enabled": true,
+    "test_mode": true
+  }
+}

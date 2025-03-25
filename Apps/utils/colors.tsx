@@ -1,0 +1,9 @@
+export const black = "#161616";
+export const white = "#FFFFFF";
+export const lightBlack = "#1E1E1E";
+export const lightRed = "#f5e7e6";
+export const lightWhite = "#F8F8F8";
+export const transparentRGBA = "rgba(52, 52, 52, 0.8)";
+export const grey = "#808080";
+export const lightGrey = "#D3D3D3";
+export const iconColor = "#F85D2C";
