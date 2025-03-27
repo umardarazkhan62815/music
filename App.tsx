@@ -4,7 +4,7 @@
  *
  * @format
  */
-
+import "./Apps/localization/i18n";
 import { NavigationContainer } from "@react-navigation/native";
 import React, { useEffect } from "react";
 import { LogBox, SafeAreaView } from "react-native";
@@ -14,10 +14,10 @@ import {
   initialWindowMetrics,
 } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import MobileAds from "react-native-google-mobile-ads";
+import mobileAds from "react-native-google-mobile-ads";
 
 function App(): JSX.Element {
-  MobileAds()
+  mobileAds()
     .initialize()
     .then((adapterStatuses) => {
       console.log("adapterStatuses", adapterStatuses);

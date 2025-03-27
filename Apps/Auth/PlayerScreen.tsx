@@ -8,27 +8,68 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-var emitter = require("tiny-emitter/instance");
 import YoutubeIframe from "react-native-youtube-iframe";
-import Animated, {
-  interpolateColor,
-  useAnimatedStyle,
-} from "react-native-reanimated";
+
 import FastImage from "react-native-fast-image";
 import { back } from "../utils/images";
+import { addToRecentlyPlayed } from "../helper/RecentData";
+import { useIsFocused } from "@react-navigation/native";
 import {
   AdEventType,
   InterstitialAd,
   TestIds,
 } from "react-native-google-mobile-ads";
 
-const adUnitId = __DEV__
-  ? TestIds.INTERSTITIAL
-  : "ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy";
-
 const PlayerScreen = ({ route, navigation }) => {
+  // const adUnitId = "ca-app-pub-1146306938517797/5053676238";
+  // const interstitial = InterstitialAd.createForAdRequest(adUnitId);
+  // console.log("interstitial", interstitial);
+  // const [loaded, setLoaded] = useState(false);
+
+  // useEffect(() => {
+  //   if (loaded) {
+  //     interstitial.show();
+  //   }
+  // }, [loaded]);
+  // useEffect(() => {
+  //   const unsubscribeLoaded = interstitial.addAdEventListener(
+  //     AdEventType.LOADED,
+  //     () => {
+  //       console.log("Hello");
+  //       setLoaded(true);
+  //     }
+  //   );
+
+  //   const unsubscribeOpened = interstitial.addAdEventListener(
+  //     AdEventType.OPENED,
+  //     () => {
+  //       console.log("Hello1");
+  //     }
+  //   );
+
+  //   const unsubscribeClosed = interstitial.addAdEventListener(
+  //     AdEventType.CLOSED,
+  //     () => {
+  //       console.log("Hello2");
+  //     }
+  //   );
+  //   const unsubscribeError = interstitial.addAdEventListener(
+  //     AdEventType.ERROR,
+  //     (error) => {
+  //       console.log("Hello2", error);
+  //     }
+  //   );
+
+  //   interstitial.load();
+
+  //   return () => {
+  //     unsubscribeLoaded();
+  //     unsubscribeOpened();
+  //     unsubscribeClosed();
+  //   };
+  // }, []);
+
   const video = route?.params.video;
-  console.log("videoRoute", video);
   const API_KEY = "AIzaSyBDWtvdqnVVYeZviH_at0B45upmoNHYcLo";
   const PLAYLIST_ID = video;
   const API_URL = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${PLAYLIST_ID}&maxResults=50&key=${API_KEY}`;
@@ -44,12 +85,12 @@ const PlayerScreen = ({ route, navigation }) => {
     try {
       const response = await fetch(API_URL);
       const data = await response.json();
-      // console.log("Data", JSON.stringify(data?.items[0]));
       const filtteredData = data?.items.filter(
         (item) => item?.snippet?.title !== "Private video"
       );
       setCurrentVideo(filtteredData[0]?.snippet?.resourceId?.videoId);
       setVideos(filtteredData || []);
+      await addToRecentlyPlayed(filtteredData[0]?.snippet?.resourceId?.videoId);
     } catch (error) {
       console.error("Error fetching YouTube playlist:", error);
     }
@@ -57,43 +98,6 @@ const PlayerScreen = ({ route, navigation }) => {
   const hidePlayer = () => {
     navigation.goBack();
   };
-  const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
-    keywords: ["fashion", "clothing"],
-  });
-
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    const unsubscribeLoaded = interstitial.addAdEventListener(
-      AdEventType.LOADED,
-      () => {
-        console.log("LOADED");
-        setLoaded(true);
-      }
-    );
-
-    const unsubscribeOpened = interstitial.addAdEventListener(
-      AdEventType.OPENED,
-      () => {
-        console.log("OPENED");
-      }
-    );
-
-    const unsubscribeClosed = interstitial.addAdEventListener(
-      AdEventType.CLOSED,
-      () => {
-        console.log("CLOSED");
-      }
-    );
-
-    interstitial.load();
-
-    return () => {
-      unsubscribeLoaded();
-      unsubscribeOpened();
-      unsubscribeClosed();
-    };
-  }, []);
 
   return (
     <View style={[{ flex: 1 }]}>
@@ -115,7 +119,9 @@ const PlayerScreen = ({ route, navigation }) => {
             </TouchableOpacity>
             <Text style={styles.player}>{"Player"}</Text>
           </View>
-          <YoutubeIframe height={300} play={paused} videoId={currentVideo} />
+          {currentVideo !== "" && (
+            <YoutubeIframe height={230} play={paused} videoId={currentVideo} />
+          )}
           <FlatList
             data={videos}
             keyExtractor={(item) => item.id}
@@ -124,8 +130,8 @@ const PlayerScreen = ({ route, navigation }) => {
               return (
                 <TouchableOpacity
                   onPress={() => {
-                    // interstitial.show();
                     setCurrentVideo(videoId);
+                    addToRecentlyPlayed(videoId);
                   }}
                   style={{
                     padding: 10,

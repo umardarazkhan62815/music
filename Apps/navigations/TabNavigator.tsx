@@ -156,6 +156,7 @@ function TabNavigator() {
     <Tab.Navigator
       tabBar={renderBottomTabs}
       screenOptions={({ route }) => ({
+        tabBarShowLabel: false,
         tabBarIcon: ({ focused, color, size }) => {
           if (route.name === "Home") {
             color = focused ? "#F85D2C" : "#8A8A8A";

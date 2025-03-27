@@ -1,23 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Linking,
   ScrollView,
   Share,
   StyleSheet,
-  Switch,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import HeaderComponent from "../../components/HeaderComponent";
 import Divider from "../../components/Divider";
+import LanguageModal from "../../components/Modals/Languages";
+import { clearRecentlyPlayed } from "../../helper/RecentData";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const More = () => {
   const [isNotificationEnabled, setIsNotificationEnabled] = useState(false);
-
+  const [modalVisible, setModalVisible] = useState(false);
   const isDarkTheme = false;
   const [darkMode, setDarkMode] = useState(isDarkTheme);
+  useEffect(() => {
+    const checkFirstTimeUser = async () => {
+      try {
+        // await AsyncStorage.removeItem("hasSeenLanguageModal");
+        const hasSeenModal = await AsyncStorage.getItem("hasSeenLanguageModal");
+        if (hasSeenModal === null) {
+          setModalVisible(true);
+          await AsyncStorage.setItem("hasSeenLanguageModal", "true");
+        }
+      } catch (error) {
+        console.error("Error checking first time user:", error);
+      }
+    };
 
+    checkFirstTimeUser();
+  }, []);
   const togggleNotification = async () => {};
 
   const togggleMode = async () => {};
@@ -35,7 +53,18 @@ const More = () => {
       }
     } catch (error: any) {}
   };
-  const handleEmailClick = async () => {};
+  const handleEmailClick = async () => {
+    Alert.alert("Contact Us", "Phone: +91 62674 37724", [
+      {
+        text: "Call",
+        onPress: () => Linking.openURL("sms:+916267437724"),
+      },
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+    ]);
+  };
   return (
     <View style={styles.container}>
       <HeaderComponent text="More" isBack={false} />
@@ -63,7 +92,7 @@ const More = () => {
               { backgroundColor: isDarkTheme ? "#272727" : "#FFFFFF" },
             ]}
           >
-            <View
+            {/* <View
               style={[
                 styles.listContent,
                 { backgroundColor: isDarkTheme ? "#272727" : "#FFFFFF" },
@@ -88,9 +117,9 @@ const More = () => {
                   value={isNotificationEnabled}
                 />
               </View>
-            </View>
-            <View style={styles.listDivider} />
-            <View style={styles.listContent}>
+            </View> */}
+            {/* <View style={styles.listDivider} /> */}
+            {/* <View style={styles.listContent}>
               <Text
                 style={[
                   styles.listTexts,
@@ -106,12 +135,12 @@ const More = () => {
                 onValueChange={togggleMode}
                 value={darkMode}
               />
-            </View>
+            </View> */}
           </View>
-          <View style={styles.headings}>
+          {/* <View style={styles.headings}>
             <Text style={styles.headingText}>History</Text>
-          </View>
-          <View
+          </View> */}
+          {/* <View
             style={[
               styles.subContainer,
               { backgroundColor: isDarkTheme ? "#272727" : "#FFFFFF" },
@@ -129,16 +158,33 @@ const More = () => {
                 <Text style={styles.historyText}>Clear History</Text>
               </TouchableOpacity>
             </View>
-          </View>
-          <View style={styles.headings}>
+          </View> */}
+          {/* <View style={styles.headings}>
             <Text style={styles.headingText}>Other</Text>
-          </View>
+          </View> */}
           <View
             style={[
               styles.subContainer,
               { backgroundColor: isDarkTheme ? "#272727" : "#FFFFFF" },
             ]}
           >
+            <TouchableOpacity
+              style={styles.listContent}
+              onPress={() => {
+                setModalVisible(true);
+              }}
+            >
+              <Text
+                style={[
+                  styles.listTexts,
+                  { color: isDarkTheme ? "#FFFFFF" : "#000000" },
+                ]}
+              >
+                Languages
+              </Text>
+            </TouchableOpacity>
+            <View style={styles.listDivider} />
+
             <TouchableOpacity
               style={styles.listContent}
               onPress={() => {
@@ -195,7 +241,8 @@ const More = () => {
                 { backgroundColor: isDarkTheme ? "#272727" : "#FFFFFF" },
               ]}
               onPress={() => {
-                // rate();
+                clearRecentlyPlayed();
+                alert("History Cleared");
               }}
             >
               <Text
@@ -204,11 +251,21 @@ const More = () => {
                   { color: isDarkTheme ? "#FFFFFF" : "#000000" },
                 ]}
               >
-                Rate App
+                Clear History
               </Text>
             </TouchableOpacity>
             <View style={styles.listDivider} />
-            <TouchableOpacity style={styles.listContent}>
+            <TouchableOpacity
+              style={styles.listContent}
+              onPress={() => {
+                Alert.alert("Creator", "Muaaz", [
+                  {
+                    text: "ok",
+                    style: "cancel",
+                  },
+                ]);
+              }}
+            >
               <Text
                 style={[
                   styles.listTexts,
@@ -219,11 +276,16 @@ const More = () => {
               </Text>
             </TouchableOpacity>
           </View>
+
           <View style={styles.headings}>
-            <Text style={styles.headings}>Version 1.0</Text>
+            <Text style={styles.headingText}>Version 1.0</Text>
           </View>
         </View>
       </ScrollView>
+      <LanguageModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 };
@@ -299,6 +361,7 @@ const styles = StyleSheet.create({
   },
   headingText: {
     color: "#888888",
+    textAlign: "center",
   },
   listContainer: {
     width: "90%",

@@ -15,11 +15,7 @@ import FeaturesListItem from "../../components/homeComponent/FeaturesListItem";
 import SongComponent from "../../components/SongComponent";
 import FastImage from "react-native-fast-image";
 import { getYoutubeMeta } from "react-native-youtube-iframe";
-import {
-  BannerAd,
-  BannerAdSize,
-  TestIds,
-} from "react-native-google-mobile-ads";
+
 var emitter = require("tiny-emitter/instance");
 const Home = ({ navigation }) => {
   const isDarkTheme = false;
@@ -61,25 +57,15 @@ const Home = ({ navigation }) => {
       ]}
     >
       <HeaderComponent text="Home" />
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("SearchScreen");
-        }}
+      <Text
         style={[
-          styles.searchBox,
-          { backgroundColor: isDarkTheme ? "#B5B5C91F" : "#7676801F" },
+          styles.headingTitleText,
+          { color: isDarkTheme ? "#FFFFFF" : "#000000" },
         ]}
       >
-        <FastImage
-          source={search}
-          style={{ width: 20, height: 20 }}
-          resizeMode="contain"
-        />
-        <Text style={[{ color: isDarkTheme ? "#BBBBC999" : "#3C3C4399" }]}>
-          Search
-        </Text>
-      </TouchableOpacity>
-      <View style={{ height: "30%" }}>
+        All Videos
+      </Text>
+      {/* <View style={{ height: "30%" }}>
         <ImageBackground
           source={{ uri: youtubeMeta?.thumbnail_url }}
           style={styles.bgImage}
@@ -109,13 +95,12 @@ const Home = ({ navigation }) => {
             </View>
           </View>
         </ImageBackground>
-      </View>
-      <BannerAd
-        unitId={TestIds.ADAPTIVE_BANNER}
-        size={BannerAdSize.FULL_BANNER}
-      />
+      </View> */}
+      {/* <BannerAd
+        unitId={"ca-app-pub-3940256099942544/9214589741"}
+        size={BannerAdSize.BANNER}
+      /> */}
       <FlatList
-        horizontal
         data={data}
         renderItem={({ item }) => <FeaturesListItem item={item} />}
         showsHorizontalScrollIndicator={false}
@@ -283,5 +268,7 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: 16,
     fontWeight: "500",
+    marginBottom: 20,
+    marginLeft: 16,
   },
 });

@@ -1,30 +1,40 @@
-import React from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import HeaderComponent from "../../components/HeaderComponent";
 import Divider from "../../components/Divider";
-import { back } from "../../utils/images";
-import { data, mostPopulerData } from "../../utils/demoData";
-import FeaturesListItem from "../../components/homeComponent/FeaturesListItem";
-import PlayList from "../../components/PlaylistComponent";
-import FastImage from "react-native-fast-image";
+import { getRecentlyPlayed } from "../../helper/RecentData";
+import YoutubeIframe from "react-native-youtube-iframe";
+import VideoCard from "./VideoCard";
+import { useIsFocused } from "@react-navigation/native";
 
 const Library = ({ navigation }) => {
+  const [currentVideo, setCurrentVideo] = useState("");
+  const [list, setList] = useState([]);
+  const [paused, setPaused] = useState(false);
+  const isfocused = useIsFocused();
+  useEffect(() => {
+    getRecentVideos();
+  }, [isfocused]);
+
+  const getRecentVideos = async () => {
+    const vidoes = await getRecentlyPlayed();
+
+    if (vidoes?.length > 0) {
+      setList(vidoes);
+      setCurrentVideo(vidoes[0]);
+    } else {
+      setList([]);
+      setCurrentVideo("");
+    }
+  };
   const isDarkTheme = false;
   return (
     <View style={styles.container}>
-      <HeaderComponent
-        text="Library"
-        isBack={false}
-        onPressAdd={() => {}}
-        navigation={undefined}
-      />
+      <HeaderComponent text="Library" isBack={false} navigation={undefined} />
       <Divider />
+      {currentVideo !== "" && (
+        <YoutubeIframe height={230} play={paused} videoId={currentVideo} />
+      )}
       <View style={{ flex: 1, paddingBottom: 100 }}>
         <View style={styles.header}>
           <Text
@@ -35,49 +45,25 @@ const Library = ({ navigation }) => {
           >
             Recently Played
           </Text>
-          <TouchableOpacity onPress={() => alert("test")}>
-            <View style={styles.moreArrowContainer}>
-              <Text style={[styles.moreText, { color: "#A1A1A1" }]}>More</Text>
-              <FastImage
-                source={back}
-                style={styles.moreArrow}
-                tintColor={"#A1A1A1"}
-              />
-            </View>
-          </TouchableOpacity>
         </View>
+
         <View style={styles.listView}>
-          {/* <FlatList
-            horizontal
-            data={data}
-            renderItem={FeaturesListItem}
-            showsHorizontalScrollIndicator={false}
-          /> */}
-        </View>
-        <View style={styles.playListHeader}>
-          <Text
-            style={[
-              styles.headingTitleText,
-              { color: isDarkTheme ? "#FFFFFF" : "#000000" },
-            ]}
-          >
-            Playlists
-          </Text>
-        </View>
-        <View>
           <FlatList
-            style={{ marginHorizontal: 18 }}
-            data={mostPopulerData}
+            numColumns={2}
+            data={list}
             renderItem={({ item }) => (
-              <PlayList
-                favList={item}
-                showRadio={false}
-                clickCallback={() => {
-                  navigation.navigate("PlayDetail");
+              <VideoCard
+                item={item}
+                onPress={(val) => {
+                  setCurrentVideo(val);
+                  setPaused(false);
                 }}
-                onSelect={undefined}
               />
             )}
+            showsHorizontalScrollIndicator={false}
+            ListEmptyComponent={
+              <Text style={styles.noTxt}>{"No Video played yet"}</Text>
+            }
           />
         </View>
       </View>
@@ -122,6 +108,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   listView: {
-    marginStart: 10,
+    marginTop: 20,
+  },
+  noTxt: {
+    color: "#808080",
+    fontSize: 14,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 20,
   },
 });

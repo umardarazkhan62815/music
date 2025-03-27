@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   headerContainer: {
-    marginTop: 20,
+    marginVertical: 10,
   },
   backIconView: {
     position: "absolute",
