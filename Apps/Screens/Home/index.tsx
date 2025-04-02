@@ -15,6 +15,11 @@ import FeaturesListItem from "../../components/homeComponent/FeaturesListItem";
 import SongComponent from "../../components/SongComponent";
 import FastImage from "react-native-fast-image";
 import { getYoutubeMeta } from "react-native-youtube-iframe";
+import {
+  BannerAd,
+  BannerAdSize,
+  TestIds,
+} from "react-native-google-mobile-ads";
 
 var emitter = require("tiny-emitter/instance");
 const Home = ({ navigation }) => {
@@ -96,10 +101,12 @@ const Home = ({ navigation }) => {
           </View>
         </ImageBackground>
       </View> */}
-      {/* <BannerAd
+      <BannerAd
         unitId={"ca-app-pub-3940256099942544/9214589741"}
         size={BannerAdSize.BANNER}
-      /> */}
+        onAdFailedToLoad={(error) => console.error("Ad failed to load", error)}
+        onAdLoaded={(onLoad) => console.log("onAdd Loaded", onLoad)}
+      />
       <FlatList
         data={data}
         renderItem={({ item }) => <FeaturesListItem item={item} />}

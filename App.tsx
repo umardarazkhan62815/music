@@ -14,16 +14,22 @@ import {
   initialWindowMetrics,
 } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import mobileAds from "react-native-google-mobile-ads";
+import MobileAds from "react-native-google-mobile-ads";
 
 function App(): JSX.Element {
-  mobileAds()
-    .initialize()
-    .then((adapterStatuses) => {
-      console.log("adapterStatuses", adapterStatuses);
-    });
-
   LogBox.ignoreAllLogs(true);
+  useEffect(() => {
+    MobileAds()
+      .setRequestConfiguration({
+        testDeviceIdentifiers: ["7bdbb286e2562dee"],
+      })
+      .then(() =>
+        MobileAds()
+          .initialize()
+          .then((val) => console.log("initialize", val))
+      )
+      .catch(console.error);
+  }, []);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

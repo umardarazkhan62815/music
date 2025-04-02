@@ -21,53 +21,44 @@ import {
 } from "react-native-google-mobile-ads";
 
 const PlayerScreen = ({ route, navigation }) => {
-  // const adUnitId = "ca-app-pub-1146306938517797/5053676238";
-  // const interstitial = InterstitialAd.createForAdRequest(adUnitId);
-  // console.log("interstitial", interstitial);
-  // const [loaded, setLoaded] = useState(false);
+  const adUnitId = TestIds.INTERSTITIAL;
+  const [interstitial, setInterstitial] = useState(null);
 
-  // useEffect(() => {
-  //   if (loaded) {
-  //     interstitial.show();
-  //   }
-  // }, [loaded]);
-  // useEffect(() => {
-  //   const unsubscribeLoaded = interstitial.addAdEventListener(
-  //     AdEventType.LOADED,
-  //     () => {
-  //       console.log("Hello");
-  //       setLoaded(true);
-  //     }
-  //   );
+  useEffect(() => {
+    const newInterstitial = InterstitialAd.createForAdRequest(adUnitId);
 
-  //   const unsubscribeOpened = interstitial.addAdEventListener(
-  //     AdEventType.OPENED,
-  //     () => {
-  //       console.log("Hello1");
-  //     }
-  //   );
+    // Ad Event Listeners
+    const unsubscribeLoaded = newInterstitial.addAdEventListener(
+      AdEventType.LOADED,
+      () => {
+        console.log("Ad Loaded ✅");
+        newInterstitial.show();
+      }
+    );
 
-  //   const unsubscribeClosed = interstitial.addAdEventListener(
-  //     AdEventType.CLOSED,
-  //     () => {
-  //       console.log("Hello2");
-  //     }
-  //   );
-  //   const unsubscribeError = interstitial.addAdEventListener(
-  //     AdEventType.ERROR,
-  //     (error) => {
-  //       console.log("Hello2", error);
-  //     }
-  //   );
+    const unsubscribeClosed = newInterstitial.addAdEventListener(
+      AdEventType.CLOSED,
+      () => {
+        console.log("Ad Closed ✅");
+      }
+    );
 
-  //   interstitial.load();
+    const unsubscribeError = newInterstitial.addAdEventListener(
+      AdEventType.ERROR,
+      (error) => {
+        console.error("Ad Error ❌", error);
+      }
+    );
 
-  //   return () => {
-  //     unsubscribeLoaded();
-  //     unsubscribeOpened();
-  //     unsubscribeClosed();
-  //   };
-  // }, []);
+    newInterstitial.load();
+    setInterstitial(newInterstitial);
+
+    return () => {
+      unsubscribeLoaded();
+      unsubscribeClosed();
+      unsubscribeError();
+    };
+  }, []);
 
   const video = route?.params.video;
   const API_KEY = "AIzaSyBDWtvdqnVVYeZviH_at0B45upmoNHYcLo";
